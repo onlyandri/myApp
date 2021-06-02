@@ -1,0 +1,218 @@
+<div class="main-panel" id="main-container">
+  <div class="content">
+    <div class="panel-header bg-primary-gradient">
+      <div class="page-inner py-5">
+        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+          <div>
+            <h2 class="text-white pb-2 fw-bold">{{title}}</h2>
+            <h5 class="text-white op-7 mb-2">Pelanggan</h5>
+          </div>
+          <div class="ml-md-auto py-2 py-md-0">
+            <a href="#" class="btn btn-white btn-border btn-round mr-2"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-inner mt--5">
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Multi Filter Select</h4>
+            </div>
+            <div class="card-body">
+              <a class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#addRowModal">tambah data</a>
+              <div class="table-responsive">
+                <table id="multi-filter-select" class="display table table-striped table-hover">
+                  <thead>
+                  <tr>
+                    <th>no</th>
+                    <th>id pelanggan</th>
+                    <th>nama pelanggan</th>
+                    <th>type</th>
+                    <th>langganan</th>
+                    <th>action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let pel of pelanggans; let i =index">
+                    <td>{{i + 2}}</td>
+                    <td>{{pel.id}}</td>
+                    <td>{{pel.nama}}</td>
+                    <td>{{pel.typepelangganByJenis.namaType}}</td>
+                    <td>{{pel.typepelangganByJenis.mastertypeByMaster.namaMaster}}</td>
+                    <td><button class="btn btn-primary" (click)="onOpenModal( pel,'edit')">edit</button></td>
+                    <td><button class="btn btn-danger" (click)="onOpenModal( pel,'hapus')">hapus</button></td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!--    modal -->
+
+    <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header no-bd">
+            <h5 class="modal-title">
+              <span class="fw-mediumbold">Tambah</span>
+              <span class="fw-light">Kelas</span>
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="small">Create a new row using this form, make sure you fill them all</p>
+            <form (ngSubmit)="onTambahPelanggan(f)" #f="ngForm">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default">
+                    <label>Nama</label>
+                    <input type="text" class="form-control" ngModel name="nama">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default">
+                    <label>ALAMAT</label>
+                    <input type="text" class="form-control" ngModel name="alamat">
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="form-group form-group-default">
+                    <label>Jenis</label>
+                    <select class="form-control" name="master" ngModel (change)="getJenisByMaster($event)">
+                      <option value="">-- Pilih Langganan --</option>
+                      <option *ngFor="let op of master" value="{{op?.idMaster}}">{{op?.namaMaster}}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="form-group form-group-default">
+                    <label>Jenis</label>
+                    <select class="form-control" ngModel name="jenis">
+                      <option value="">-- Pilih Jenis --</option>
+                      <option *ngFor="let op of jenisByMasster" value="{{op?.idType}}">{{op?.namaType}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer no-bd">
+                <button type="submit" class="btn btn-primary">Tambah</button>
+                <button type="button" id="btl" class="btn btn-danger" data-dismiss="modal">Batal</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header no-bd">
+            <h5 class="modal-title">
+              <span class="fw-mediumbold">Edit</span>
+              <span class="fw-light">Kelas</span>
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="small">Create a new row using this form, make sure you fill them all</p>
+            <form #fEdit="ngForm">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default">
+                    <label>Nama</label>
+                    <input type="text" class="form-control" ngModel="{{editPelanggan?.nama}}" name="nama">
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <input type="text" class="form-control" name="id" ngModel="{{editPelanggan?.id}}">
+                  </div>
+                </div>
+<!--                <div class="col-sm-12">-->
+<!--                  <div class="form-group form-group-default">-->
+<!--                    <label>ALAMAT</label>-->
+<!--                    <input type="text" class="form-control" ngModel="{{editPelanggan?.alamat}}" name="alamat">-->
+<!--                  </div>-->
+<!--                </div>-->
+                <div class="col-md-12">
+                  <div class="form-group form-group-default">
+                    <label>Jenis</label>
+                    <select class="form-control"  name="master" (change)="getJenisByMaster($event)">
+                      <option value="">-- Pilih Jenis --</option>
+                      <option *ngFor="let op of master" ngModel="{{op?.idMaster}}" value="{{op?.idMaster}}">{{op?.namaMaster}}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <div class="form-group form-group-default">
+                    <label>Jenis</label>
+                    <select class="form-control" name="jenis">
+                      <option value="">-- Pilih Jenis --</option>
+                      <option *ngFor="let op of jenisByMasster" ngModel="{{op?.idType}}" value="{{op?.idType}}">{{op?.namaType}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer no-bd">
+                <button (click)="onEditPelanggan(fEdit.value)" type="button" class="btn btn-primary">Edit</button>
+                <button type="button" id="btl2" class="btn btn-danger" data-dismiss="modal">Batal</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="hapusModal" class="modal fade" tabindex="-1">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Hapus Data Refensi</h5>
+            <button type="button" class="close" data-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="card  rounded-top-0 rounded-right-0">
+              <div class="card-body">
+                <form>
+                  <label>Master  :</label>
+                  <div class="form-group form-group-feedback form-group-feedback-left">
+                    <input type="text" class="form-control"  value="{{deletePelanggan?.nama}}"  disabled >
+                    <div class="form-control-feedback">
+                      <i class="icon-gear text-muted"></i>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <button  class="btn btn-dark mr-2" data-dismiss="modal" id="batalhapus"><i class="fa fa-backspace"></i> Batal </button>
+                    <button (click)="onDeletePelanggan(deletePelanggan?.id)" class="btn btn-danger" ><span class="spinner-border spinner-border-sm mr-1"></span><i class="fa fa-list"></i>  HAPUS !! </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!--    end modal -->
+
+
+
+  </div>
+</div>
+
